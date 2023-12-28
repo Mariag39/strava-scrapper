@@ -25,10 +25,12 @@ def scrapin():
         print(e)
 
 @opening.command
-def get_users_info():
+@click.option('--output','-o',required=False,default='users_data.json', help='json output file')
+@click.option('--list_id','id',required=True, help='id user list')
+def get_users_info(list_id,output):
     '''Get user info from id list provided'''
     user = UserSpider()
-    user.athlete_info('56868533')
+    user.athlete_info(list_id,output)
 
 
 if __name__ == '__main__':

@@ -15,7 +15,6 @@ class UserSpider:
 
         self.session = self._create_sess()
         self.cookies = None
-        self.id = ['56868533','17154043','5952380']
         
 
     def _create_sess(self):
@@ -23,9 +22,9 @@ class UserSpider:
         session = requests.Session()
         
         if(Path("cookies.json").is_file()):
-            self.cookies = json.loads(Path("cookies.json").read_text())  # save them to file as JSON
-            self.cookies = requests.utils.cookiejar_from_dict(self.cookies)  # turn dict to cookiejar
-            session.cookies.update(self.cookies)  # load cookiejar to current session
+            self.cookies = json.loads(Path("cookies.json").read_text())  
+            self.cookies = requests.utils.cookiejar_from_dict(self.cookies)
+            session.cookies.update(self.cookies)  
         
         return session
     
@@ -53,18 +52,18 @@ class UserSpider:
         
         return data
             
-    def athlete_info(self):
+    def athlete_info(self, list_id, output):
         atheletes = []
-        for i in self.id:
+        for i in list_id:
             data_file = self._get(self.URL_ATHLETE,i)
             atheletes.append(data_file)
-        self.__json_to_file(atheletes)
+        self.__json_to_file(atheletes,output)
     
-    def __json_to_file(self,ath_list):
-        with open("users_data.json", "w") as file:
+    def __json_to_file(self,ath_list,output):
+        with open(output, "w") as file:
             json.dump(ath_list, file)
 
 
 
-user = UserSpider()
-user.athlete_info()
+# user = UserSpider()
+# user.athlete_info()
