@@ -61,7 +61,7 @@ class StravaSpider:
         
         self.cookies = self.sess.cookies.get_dict()
         self.cookies = requests.utils.dict_from_cookiejar(self.sess.cookies)  # turn cookiejar into dict
-        Path("cookies.json").write_text(json.dumps(self.cookies))
+        Path("../files/cookies.json").write_text(json.dumps(self.cookies))
         self.__check_login()
 
         return response

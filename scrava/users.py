@@ -21,11 +21,12 @@ class UserSpider:
 
         session = requests.Session()
         
-        if(Path("cookies.json").is_file()):
-            self.cookies = json.loads(Path("cookies.json").read_text())  
+        if(Path("../files/cookies.json").is_file()):
+            self.cookies = json.loads(Path("../files/cookies.json").read_text())  
             self.cookies = requests.utils.cookiejar_from_dict(self.cookies)
-            session.cookies.update(self.cookies)  
-        
+            session.cookies.update(self.cookies)
+        else:
+            raise Exception()
         return session
     
     def __check_response(self, response):
@@ -39,8 +40,13 @@ class UserSpider:
         res = self.session.get(url + id,headers=UserSpider.USER_AGENT,allow_redirects=True)
         self.__check_response(res)
         soup = BeautifulSoup(res.content,'html.parser')
-        athlete = soup.find_all('script',type='application/ld+json')
-        json_object = json.loads(athlete[1].text)
+        results = soup.find_all('script',type='application/ld+json')
+        athlete = None
+        for a in results:
+            if 'Person' in a.text:
+                athlete = a
+        print(athlete)
+        json_object = json.loads(athlete.text)
         name = json_object['name']
         description = json_object['description']
         image = json_object['image']
@@ -52,9 +58,18 @@ class UserSpider:
         
         return data
             
-    def athlete_info(self, list_id, output):
+    def athlete_info(self, list_id:str, output, file=None):
         atheletes = []
+        if file != None:
+            list_id = []
+            with open(file,"r") as f:
+                for x in f.readlines():
+                    list_id.append(x)
+        else:
+            list_id = list_id.split(',')
+        
         for i in list_id:
+            print(i)
             data_file = self._get(self.URL_ATHLETE,i)
             atheletes.append(data_file)
         self.__json_to_file(atheletes,output)
@@ -63,7 +78,3 @@ class UserSpider:
         with open(output, "w") as file:
             json.dump(ath_list, file)
 
-
-
-# user = UserSpider()
-# user.athlete_info()

@@ -25,12 +25,13 @@ def scrapin():
         print(e)
 
 @opening.command
-@click.option('--output','-o',required=False,default='users_data.json', help='json output file')
-@click.option('--list_id','id',required=True, help='id user list')
-def get_users_info(list_id,output):
+@click.option('--output','-o',required=False,default='../files/users_data.json', help='json output file')
+@click.option('--list_id','-li',required=False,help='string list id (comma separated)')
+@click.option('--file','-f', required=False,help='list provided is a file')
+def get_users_info(list_id:str,output:str,file:str):
     '''Get user info from id list provided'''
     user = UserSpider()
-    user.athlete_info(list_id,output)
+    user.athlete_info(list_id,output,file)
 
 
 if __name__ == '__main__':
