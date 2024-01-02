@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import os
 import json
 from pathlib import Path
+import tempfile
 
 class StravaSpider:
     start_url = 'https://www.strava.com/login'
@@ -61,7 +62,7 @@ class StravaSpider:
         
         self.cookies = self.sess.cookies.get_dict()
         self.cookies = requests.utils.dict_from_cookiejar(self.sess.cookies)  # turn cookiejar into dict
-        Path("../files/cookies.json").write_text(json.dumps(self.cookies))
+        Path(tempfile.gettempdir() + "cookies.json").write_text(json.dumps(self.cookies))
         self.__check_login()
 
         return response
