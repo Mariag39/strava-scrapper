@@ -13,18 +13,19 @@ class StravaSpider:
     USER_AGENT = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/119.0'}
     csrf_token = None
 
+
     def __init__(self):
         self.sess = self.__create_sess()
         self.cookies = None
 
     def __create_sess(self):
-        
+        ''' Create session with request '''
         session = requests.Session()
         return session
 
 
     def __store_response(self, response):
-        
+        ''' Get csrf-token to put in headers when login'''
         self.response = response
         self.soup = BeautifulSoup(response.text, 'lxml')
         meta = self.soup.find('meta',attrs={'name':'csrf-token'})
@@ -34,7 +35,7 @@ class StravaSpider:
         return response
 
     def login(self,email, password):
-        
+        ''' Get data from login url and send it to session url as authentication'''
         self.logout()
         response = self.sess.get(self.start_url,headers=StravaSpider.USER_AGENT, allow_redirects=True)
         self.__store_response(response)
@@ -60,6 +61,7 @@ class StravaSpider:
         if response.status_code == 302 and response.headers['Location'] == StravaSpider.start_url:
             raise Exception
         
+        # Keep cookies in temp dir to use them later
         self.cookies = self.sess.cookies.get_dict()
         self.cookies = requests.utils.dict_from_cookiejar(self.sess.cookies)  # turn cookiejar into dict
         Path(tempfile.gettempdir() + "cookies.json").write_text(json.dumps(self.cookies))
@@ -68,11 +70,11 @@ class StravaSpider:
         return response
 
     def __check_login(self):
+        ''' Check login was successfull '''
         res = self.sess.get("https://www.strava.com/onboarding",headers=StravaSpider.USER_AGENT,allow_redirects=True)
         soup = BeautifulSoup(res.content,'html.parser')
         try:
             assert("logged-in" in res.text)
-            profile = soup.select('div.athlete-profile')
         except Exception as e:
             print('Not logged in')
 

@@ -23,7 +23,7 @@ class UserSpider:
         
 
     def _create_sess(self):
-
+        ''' Create session and load cookies got in previous login '''
         session = requests.Session()
         
         if(Path(tempfile.gettempdir() + "cookies.json").is_file()):
@@ -35,18 +35,20 @@ class UserSpider:
         return session
     
     def __check_response(self, response):
+        ''' Check requests are authenticated '''
         response.raise_for_status()
         if "class='logged-out" in response.text:
             raise Exception()
         return response
     
     def _get(self,url):
-
+        ''' GET requests '''
         res = self.session.get(url,headers=UserSpider.USER_AGENT,allow_redirects=True)
         self.__check_response(res)
         return res.content
     
     def athelete_response(self,data_response):
+        ''' Use bs4 to get desired elements from response '''
         soup = BeautifulSoup(data_response,'html.parser')
         results = soup.find_all('script',type='application/ld+json')
         athlete = None
@@ -69,6 +71,7 @@ class UserSpider:
 
     
     def user_search(self,name:str,output):
+        ''' GET results from search '''
         self.name = name
         self.output = output
         data_res = self._get(self.URL_SEARCH + name)
@@ -77,6 +80,7 @@ class UserSpider:
             self.__json_to_file(to_json,self.output)
 
     def __data_former(self,result):
+        ''' Create search output with name and id '''
         soup = BeautifulSoup(result,'html.parser')
         res = soup.find_all("a", class_="athlete-name-link")
         search_res = []
@@ -98,6 +102,7 @@ class UserSpider:
 
 
     def next_page(self,page):
+        ''' Move to the page provided '''
         data_res = self._get(self.URL_SEARCH_MORE + str(page) + "&text=" + self.name)
         print("----- Page " + page + " -----")
         to_json = self.__data_former(data_res)
@@ -106,6 +111,7 @@ class UserSpider:
         
             
     def athlete_info(self, list_id:str, output, file=False):
+        ''' Get user info '''
         atheletes = []
         ids = []
         if file:
@@ -126,6 +132,7 @@ class UserSpider:
             self.__json_to_file(atheletes,output)
     
     def __json_to_file(self,ath_list,output):
+        ''' Dump Json to file provided '''
         with open(output, "w") as file:
             json.dump(ath_list, file)
 
