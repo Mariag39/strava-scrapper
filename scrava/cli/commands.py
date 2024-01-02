@@ -26,24 +26,30 @@ def scrapin():
 
 @opening.command
 @click.option('--output','-o',required=False, help='json output file')
-@click.option('--list_id','-li',required=False,help='string list id (comma separated)')
-@click.option('--file','-f', required=False,help='list provided is a file')
-def get_users_info(list_id:str,output:str,file:str):
+@click.option('--list_id','-li',required=True,help='string list id (comma separated)')
+@click.option('--file','-f',is_flag=True, default=False, required=False,help='list provided is a file')
+def get_users_info(list_id:str,output:str,file:bool):
     '''Get user info from id list provided'''
-    user = UserSpider()
-    user.athlete_info(list_id,output,file)
+    try:
+        user = UserSpider()
+        user.athlete_info(list_id,output,file)
+    except Exception as e:
+        click.secho('Need login (use scrapin command first)', fg='red')
 
 @opening.command
 @click.option('--output','-o',required=False, help='json output file')
 @click.option('--name','-n',required=True,help='Athlete name to search')
 def search_user(output:str,name:str):
     '''Search users by name'''
-    user_search = UserSpider()
-    user_search.user_search(name,output)
-    page = click.prompt('page ("q" to exit)')
-    while(page != 'q'):
-        user_search.next_page(page)
-        page = click.prompt('page')
+    try:
+        user_search = UserSpider()
+        user_search.user_search(name,output)
+        page = click.prompt('page ("q" to exit)')
+        while(page != 'q'):
+            user_search.next_page(page)
+            page = click.prompt('page')
+    except Exception as e:
+        click.secho('Need login (use scrapin command first)', fg='red')
 
 if __name__ == '__main__':
     opening()

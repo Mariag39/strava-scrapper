@@ -105,17 +105,19 @@ class UserSpider:
             self.__json_to_file(to_json,self.output)
         
             
-    def athlete_info(self, list_id:str, output, file=None):
+    def athlete_info(self, list_id:str, output, file=False):
         atheletes = []
-        if file != None:
-            list_id = []
-            with open(file,"r") as f:
+        ids = []
+        if file:
+            with open(list_id,"r") as f:
                 for x in f.readlines():
-                    list_id.append(x)
+                    ids.append(x)
         else:
-            list_id = list_id.split(',')
-        
-        for i in list_id:
+            ids = list_id
+            ids = ids.split(',')
+            
+
+        for i in ids:
             print(i)
             data_file = self._get(self.URL_ATHLETE + i)
             ath = self.athelete_response(data_file)

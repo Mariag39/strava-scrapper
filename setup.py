@@ -31,7 +31,6 @@ setup(
         "Topic :: Utilities"
     ],
     install_requires=requirements,
-    #tests_require=["pytest", "requests-mock"],
     entry_points={
         'console_scripts': [
             'scrava = scrava.cli.commands:opening'

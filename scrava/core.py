@@ -73,7 +73,6 @@ class StravaSpider:
         try:
             assert("logged-in" in res.text)
             profile = soup.select('div.athlete-profile')
-            print(profile)
         except Exception as e:
             print('Not logged in')
 
